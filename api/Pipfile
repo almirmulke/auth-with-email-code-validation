@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "==0.88.0"
+uvicorn = "==0.20.0"
+pydantic = "==1.10.2"
+psycopg2 = "==2.9.5"
+bcrypt = "*"
+requests = "*"
+pytest-asyncio = "*"
+httpx = "*"
+
+[dev-packages]
+pytest = "*"
+
+[requires]
+python_version = "3.11.1"
