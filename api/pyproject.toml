@@ -1,0 +1,10 @@
+[tool.black]
+line-length = 100
+
+[tool.mypy]
+ignore_missing_imports = true
+python_version = "3.11"
+
+[tool.isort]
+profile = "black"
+sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'APPLICATION', 'LOCALFOLDER']

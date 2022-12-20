@@ -1,0 +1,43 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+    - id: black
+      files: api
+      language_version: python3.9
+      args: 
+        - --config=api/pyproject.toml
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort (python)
+        files: ^api/.*\.py$
+        args:
+          - --settings-path=api/pyproject.toml
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 4.0.1 # pick a git hash / tag to point to
+    hooks:
+      - id: flake8
+        types: ["python"]
+        additional_dependencies:
+          [
+            "flake8-bugbear==22.3.20",
+            "flake8-commas==2.1.0",
+            "flake8-no-implicit-concat==0.3.3",
+          ]
+        args:
+          [
+            "--ignore=B008, C812, W503",
+            "--max-line-length=100",
+            "--exclude=**alembic/versions/*,**locust.py",
+          ]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v0.971'
+    hooks:
+      - id: mypy
+        args: ["--config-file=api/pyproject.toml"]
+        additional_dependencies: ['types-requests']
