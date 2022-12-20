@@ -1,17 +1,21 @@
 import psycopg2
+from fastapi import Depends
 
 from entities.user import User
-from utils.database import db_conn
+from utils.database import get_db_connection
 
 
 class UserRepository:
+    def __init__(self, db_conn=Depends(get_db_connection)):
+        self.db_conn = db_conn
+
     async def save(self, user_data):
         sql = """
             INSERT INTO "user"(email, password, activation_code, activation_code_expires_at)
             VALUES(%s, %s, %s, %s)
             RETURNING id, email, password, activation_code, activation_code_expires_at;
         """
-        cursor = db_conn.cursor()
+        cursor = self.db_conn.cursor()
         try:
             cursor.execute(
                 sql,
@@ -24,11 +28,11 @@ class UserRepository:
             )
         except psycopg2.DatabaseError as e:
             cursor.close()
-            db_conn.rollback()
+            self.db_conn.rollback()
             raise e
 
         id, email, password, activation_code, activation_code_expires_at = cursor.fetchone()
-        db_conn.commit()
+        self.db_conn.commit()
         cursor.close()
         return User(id, email, password, activation_code, activation_code_expires_at)
 
@@ -37,11 +41,11 @@ class UserRepository:
             SELECT id, email, password, activation_code, activation_code_expires_at, is_activated
             FROM "user" WHERE email=%s
         """
-        cursor = db_conn.cursor()
+        cursor = self.db_conn.cursor()
         try:
             cursor.execute(sql, (email,))
         except psycopg2.DatabaseError as e:
-            db_conn.rollback()
+            self.db_conn.rollback()
             raise e
 
         if (row := cursor.fetchone()) is not None:
@@ -60,7 +64,7 @@ class UserRepository:
             WHERE id=%s
             RETURNING id, email, password, activation_code, activation_code_expires_at, is_activated;
         """  # noqa: E501
-        cursor = db_conn.cursor()
+        cursor = self.db_conn.cursor()
         try:
             cursor.execute(
                 sql,
@@ -74,7 +78,7 @@ class UserRepository:
                 ),
             )
         except psycopg2.DatabaseError as e:
-            db_conn.rollback()
+            self.db_conn.rollback()
             raise e
         (
             id,
@@ -84,6 +88,6 @@ class UserRepository:
             activation_code_expires_at,
             is_activated,
         ) = cursor.fetchone()
-        db_conn.commit()
+        self.db_conn.commit()
         cursor.close()
         return User(id, email, password, activation_code, activation_code_expires_at, is_activated)

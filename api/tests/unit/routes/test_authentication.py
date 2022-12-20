@@ -23,7 +23,7 @@ class TestAuthenticationRoutes:
     ):
         async with async_client:
             response = await async_client.request(
-                method="PUT", url="auth/activate-account", json=activate_account_data
+                method="PATCH", url="auth/activate-account", json=activate_account_data
             )
             authentication_controller_mock.activate_user_account.assert_called_once_with(
                 default_user, activate_account_data.get("activation_code")

@@ -22,13 +22,12 @@ async def sign_up_user(
     return await authentication_controller.sign_up(user_data)
 
 
-@protected_auth_router.put("/activate-account", status_code=status.HTTP_200_OK)
+@protected_auth_router.patch("/activate-account", status_code=status.HTTP_200_OK)
 async def activate_account(
     request: Request,
     activation_data: AccountActivationSchema = Body(),
     authentication_controller=Depends(AuthenticationController),
 ):
-    print("Called")
     await authentication_controller.activate_user_account(
         request.user, activation_data.activation_code
     )

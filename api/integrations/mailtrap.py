@@ -23,3 +23,5 @@ class MailtrapClient(Singleton):
         if 400 <= response.status_code <= 499:
             # log that email was not sent to user
             print("Activation code email was not sent successfully!")
+
+        return response

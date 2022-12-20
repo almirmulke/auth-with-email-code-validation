@@ -1,5 +1,6 @@
 from datetime import datetime
 from glob import glob
+from unittest.mock import MagicMock
 
 import pytest
 from fastapi import Request
@@ -8,6 +9,7 @@ from httpx import AsyncClient
 from app import app
 from entities.user import User
 from middlwares.authentication import authentication_middlware
+from utils.database import get_db_connection
 
 pytest_plugins = [
     fixture.replace("/", ".").replace("\\", ".").replace(".py", "")
@@ -15,13 +17,7 @@ pytest_plugins = [
     + glob("tests/integration/fixtures/**/*.py", recursive=True)
     if "__" not in fixture
 ]
-
-
-@pytest.fixture
-def async_client():
-    return AsyncClient(app=app, base_url="http://localhost")
-
-
+app.dependency_overrides[get_db_connection] = lambda: MagicMock()
 default_user_instance = User(
     id=1,
     email="default@email.com",
@@ -30,6 +26,11 @@ default_user_instance = User(
     activation_code_expires_at=datetime.now(),
     is_activated=False,
 )
+
+
+@pytest.fixture
+def async_client():
+    return AsyncClient(app=app, base_url="http://localhost")
 
 
 @pytest.fixture
